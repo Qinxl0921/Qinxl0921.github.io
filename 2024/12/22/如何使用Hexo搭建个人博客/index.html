@@ -175,7 +175,7 @@
             
             <span class="tag">
                 
-                <a href="/tags/guide/" style="color: #03a9f4">
+                <a href="/tags/guide/" style="color: #00bcd4">
                     guide
                 </a>
             </span>
@@ -185,7 +185,7 @@
     </div>
     
     <div class="content" v-pre>
-        <h3 id="修改博客默认配置"><a href="#修改博客默认配置" class="headerlink" title="修改博客默认配置"></a>修改博客默认配置</h3><p>可以打开Blogs文件夹下面的_config.yml文件，在里面修改博客的默认标题，作者等配置。</p>
+        <h3 id="1-修改博客默认配置"><a href="#1-修改博客默认配置" class="headerlink" title="1. 修改博客默认配置"></a>1. 修改博客默认配置</h3><p>可以打开Blogs文件夹下面的_config.yml文件，在里面修改博客的默认标题，作者等配置。</p>
 <pre><code class="bash">## Site
 title: 标题
 subtitle: 副标题
@@ -201,7 +201,7 @@ npx hexo d	# 上传
 </code></pre>
 <p>npx用于临时执行hexo</p>
 <p>注意每次更改后，博客绑定域名都会恢复成原始的，需要重新绑定。</p>
-<h3 id="书写并上传博客"><a href="#书写并上传博客" class="headerlink" title="书写并上传博客"></a>书写并上传博客</h3><p>在Blogs文件夹下面打开git bash，使用如下命令创建新的博客：</p>
+<h3 id="2-书写并上传博客"><a href="#2-书写并上传博客" class="headerlink" title="2. 书写并上传博客"></a>2. 书写并上传博客</h3><p>在Blogs文件夹下面打开git bash，使用如下命令创建新的博客：</p>
 <pre><code class="bash">npx hexo new &#39;文章标题&#39;
 </code></pre>
 <p>运行此命令，会在Blogs&#x2F;source&#x2F;_posts文件夹下面生成以文章标题为文件名的md文件。然后使用Typora或者语雀打开，即可编写博客内容。</p>
@@ -209,6 +209,18 @@ npx hexo d	# 上传
 <pre><code class="bash">npx hexo g	# 生成博客
 npx hexo d	# 上传博客
 </code></pre>
+<h3 id="3-文章缩略"><a href="#3-文章缩略" class="headerlink" title="3. 文章缩略"></a>3. 文章缩略</h3><p>缩略展示文档内容有两种方法：</p>
+<ol>
+<li><p>使用<span id="more"></span>语法</p>
+<p>在文档内容中使用<!-- more -->，这样在网页上只能预览到<!-- more -->之前的内容，后面的内容需要点击阅读全文才能查看。</p>
+</li>
+<li><p>在Front-Matter里设置description</p>
+<p>即在文档开头的description参数下设置想要预览的内容，此内容不会出现在正文中。</p>
+<pre><code class="markdown">description: |
+    文档预览内容，不会出现在正文中。
+</code></pre>
+</li>
+</ol>
 
     </div>
     
