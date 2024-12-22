@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>如何使用Hexo搭建个人博客 | 小Q的编程小屋</title>
+    <title> | 小Q的编程小屋</title>
     <meta name="author" content="qinxl" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
@@ -156,7 +156,7 @@
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
             <div class="article">
     <div>
-        <h1>如何使用Hexo搭建个人博客</h1>
+        <h1></h1>
     </div>
     <div class="info">
         <span class="date">
@@ -167,10 +167,49 @@
         </span>
         
         
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/guide/" style="color: #ff7d73">
+                    guide
+                </a>
+            </span>
+            
+        </span>
+        
     </div>
     
     <div class="content" v-pre>
-        
+        <h3 id="修改博客默认配置"><a href="#修改博客默认配置" class="headerlink" title="修改博客默认配置"></a>修改博客默认配置</h3><p>可以打开Blogs文件夹下面的_config.yml文件，在里面修改博客的默认标题，作者等配置。</p>
+<pre><code class="java">## Site
+title: 标题
+subtitle: 副标题
+description: 描述
+keywords: 关键词
+author: 站主
+language: 语言（可以填写zh-CN）
+timezone: 时区（可以填写Asia/Shanghai）
+</code></pre>
+<p>修改完配置文件后，使用如下命令，更新配置文件：</p>
+<pre><code class="java">npx hexo g	# 生成博客
+npx hexo d	# 上传
+</code></pre>
+<p>npx用于临时执行hexo</p>
+<p>注意每次更改后，博客绑定域名都会恢复成原始的，需要重新绑定。</p>
+<h3 id="书写并上传博客"><a href="#书写并上传博客" class="headerlink" title="书写并上传博客"></a>书写并上传博客</h3><p>在Blogs文件夹下面打开git bash，使用如下命令创建新的博客：</p>
+<pre><code class="java">npx hexo new &#39;文章标题&#39;
+</code></pre>
+<p>运行此命令，会在Blogs&#x2F;source&#x2F;_posts文件夹下面生成以文章标题为文件名的md文件。然后使用Typora或者语雀打开，即可编写博客内容。</p>
+<p>写好博客后，在git bash中使用如下命令生成并上传博客：</p>
+<pre><code class="java">npx hexo g	# 生成博客
+npx hexo d	# 上传博客
+</code></pre>
+
     </div>
     
     
