@@ -3,7 +3,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8" />
-    <title>Tags: demo | 小Q的编程小屋</title>
+    <title>Nacos注册中心 | 小Q的编程小屋</title>
     <meta name="author" content="qinxl" />
     <meta name="description" content="" />
     <meta name="keywords" content="" />
@@ -37,6 +37,10 @@
 
 
 <script src="/js/lib/preview.js"></script>
+
+
+
+
 
 
 
@@ -150,76 +154,84 @@
 </transition>
 
         <div id="main" :class="loading ? 'into-enter-from': 'into-enter-active'">
-            <div id="archives">
-    
-    <div class="categories-tags">
-        
-        
-        
-        <span>
-            <a href="/tags/demo/" style="background: linear-gradient(120deg, #9abbf7 0%, #ffbbf4 100%)">
-                <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
-                </span>
-                demo
-            </a>
+            <div class="article">
+    <div>
+        <h1>Nacos注册中心</h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <i class="fa-solid fa-calendar fa-fw"></i>
+            </span>
+            2024/12/28
         </span>
         
         
-        
-        
-        
-        <span>
-            <a href="/tags/guide/" style="background: #03a9f4">
-                <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
-                </span>
-                guide
-            </a>
+        <span class="tags">
+            <span class="icon">
+                <i class="fa-solid fa-tags fa-fw"></i>
+            </span>
+            
+            
+            <span class="tag">
+                
+                <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="color: #03a9f4">
+                    微服务
+                </a>
+            </span>
+            
         </span>
-        
-        
-        
-        <span>
-            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="background: #ff7d73">
-                <span class="icon">
-                    <i class="fa-solid fa-tags fa-fw"></i>
-                </span>
-                微服务
-            </a>
-        </span>
-        
         
     </div>
     
-    <div class="timeline">
-        <div class="timeline-tail"></div>
-        <div class="timeline-content">
-            <div class="item-time">2024/12/22</div>
-            <a href="/2024/12/22/littleq/">
-                <h3>littleq</h3>
-            </a>
-            <div class="info">
-                
-                
-                <span class="tags">
-                    <span class="icon">
-                        <i class="fa-solid fa-tags fa-fw"></i>
-                    </span>
-                    
-                    
-                    <span class="tag">
-                        
-                        <a href="/tags/demo/" style="color: #ff7d73">
-                            demo
-                        </a>
-                    </span>
-                    
-                </span>
-                
-            </div>
-        </div>
+    <div class="content" v-pre>
+        <p>Nacos官方文档：<a target="_blank" rel="noopener" href="https://nacos.io/docs/v2.3/quickstart/quick-start/?spm=5238cd80.216780ba.0.0.4dbbcd368esDKS">https://nacos.io/docs/v2.3/quickstart/quick-start/?spm=5238cd80.216780ba.0.0.4dbbcd368esDKS</a></p>
+<h3 id="1、配置MySQL"><a href="#1、配置MySQL" class="headerlink" title="1、配置MySQL"></a>1、配置MySQL</h3><p>新建一个nacos数据库，主要用于nacos的持久化。</p>
+<h3 id="2、使用docker部署"><a href="#2、使用docker部署" class="headerlink" title="2、使用docker部署"></a>2、使用docker部署</h3><p>配置文件：custom.env</p>
+<p>用于配置Nacos和MySQL连接信息。</p>
+<p>docker部署命令：</p>
+<pre><code class="shell">docker run -d \
+--name nacos \
+--env-file ./nacos/custom.env \
+-p 8848:8848 \
+-p 9848:9848 \
+-p 9849:9849 \
+--restart=always \
+--network qmall-net \
+nacos/nacos-server:v2.1.0-slim
+</code></pre>
+<p>访问nacos：<a target="_blank" rel="noopener" href="http://ip:8848/nacos">http://IP:8848/nacos</a></p>
+<p>如果用的是云服务器，记得在云服务器控制界面，添加防火墙规则！</p>
+<h3 id="3、服务注册"><a href="#3、服务注册" class="headerlink" title="3、服务注册"></a>3、服务注册</h3><p>1）引入nacos discovery依赖</p>
+<pre><code class="xml">&lt;!--nacos 服务注册--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+<p>2）配置nacos地址</p>
+<p>在application.yml文件里配置nacos地址：</p>
+<pre><code class="yaml">cloud:
+    nacos:
+        server-addr: ip:8848
+</code></pre>
+<p>启动服务后，就可以在nacos管理页面-&gt;服务管理-&gt;服务列表中查看注册的服务。</p>
+<h3 id="4、服务发现"><a href="#4、服务发现" class="headerlink" title="4、服务发现"></a>4、服务发现</h3><p>服务注册完成后，使用DiscoveryClient进行服务调用：</p>
+<pre><code class="java">private final DiscoveryClient discoveryClient;
+private void handleCartItems(LIst&lt;CartVO&gt; vos)&#123;
+    // 根据服务名称，拉取服务的实例列表
+    List&lt;ServiceInstance&gt; instances = discoveryClient.getInstances(&quot;xxx-service&quot;);
+&#125; 
+</code></pre>
+<p>这样调用服务的方式太麻烦了，后面可以使用OpenFeign。</p>
+
     </div>
+    
+    
+    
+    
+    
+    
     
 </div>
 
@@ -251,6 +263,12 @@
         
     </div>
     <script src="/js/main.js"></script>
+    
+    
+
+
+
+
     
 </body>
 </html>
