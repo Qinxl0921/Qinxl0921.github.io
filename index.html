@@ -198,74 +198,7 @@
     <div class="description">
         <div class="content" v-pre>
             
-            <h2 id="一、OpenFeign基础使用"><a href="#一、OpenFeign基础使用" class="headerlink" title="一、OpenFeign基础使用"></a>一、OpenFeign基础使用</h2><h3 id="1、在pom-xml里面引入相关依赖"><a href="#1、在pom-xml里面引入相关依赖" class="headerlink" title="1、在pom.xml里面引入相关依赖"></a>1、在pom.xml里面引入相关依赖</h3><p>引入OpenFeign和负载均衡组件。</p>
-<pre><code class="java">&lt;!--openFeign--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-cloud-starter-openfeign&lt;/artifactId&gt;
-&lt;/dependency&gt;
-&lt;!--负载均衡器--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;
-    &lt;artifactId&gt;spring-cloud-starter-loadbalancer&lt;/artifactId&gt;
-&lt;/dependency&gt;
-</code></pre>
-<h3 id="2、在启动类中，使用-EnableFeignClients注解，启用OpenFeign功能"><a href="#2、在启动类中，使用-EnableFeignClients注解，启用OpenFeign功能" class="headerlink" title="2、在启动类中，使用@EnableFeignClients注解，启用OpenFeign功能"></a>2、在启动类中，使用@EnableFeignClients注解，启用OpenFeign功能</h3><pre><code class="java">@EnableFeignClients
-@SpringBootApplication
-public class CartApplication &#123;...&#125;
-</code></pre>
-<h3 id="3、编写Feign客户端"><a href="#3、编写Feign客户端" class="headerlink" title="3、编写Feign客户端"></a>3、编写Feign客户端</h3><p>需要在类上加注解@FeignClient(value &#x3D; “service_name”)，表明服务的名字。</p>
-<p>在方法上定义请求方式，请求路径，返回值类型等等。</p>
-<pre><code class="java">@FeignClient(value = &quot;service_name&quot;)
-public interface ItemClient&#123;
-    @GetMapping(&quot;/user&quot;)
-    List&lt;T&gt; queryItemByIds(@RequestParam(&quot;ids&quot;) Collection&lt;Long&gt; ids);
-&#125;
-</code></pre>
-<h3 id="4、使用FeignClient，实现远程调用"><a href="#4、使用FeignClient，实现远程调用" class="headerlink" title="4、使用FeignClient，实现远程调用"></a>4、使用FeignClient，实现远程调用</h3><pre><code class="java">List&lt;T&gt; lists = itemClient.queryItemByIds(List.of(1,2,3));
-</code></pre>
-<h2 id="二、连接池"><a href="#二、连接池" class="headerlink" title="二、连接池"></a>二、连接池</h2><p>原始的OpenFeign底层发http请求用的是jdk里面自带的HttpURLCollection，不带连接池，效率比较低。为了提高性能，引入okhttp连接池。</p>
-<h3 id="1、引入OKHttp依赖"><a href="#1、引入OKHttp依赖" class="headerlink" title="1、引入OKHttp依赖"></a>1、引入OKHttp依赖</h3><pre><code class="java">&lt;!--okhttp的依赖--&gt;
-&lt;dependency&gt;
-    &lt;groupId&gt;io.github.openfeign&lt;/groupId&gt;
-    &lt;artifactId&gt;feign-okhttp&lt;/artifactId&gt;
-&lt;/dependency&gt;
-</code></pre>
-<h3 id="2、启动okhttp"><a href="#2、启动okhttp" class="headerlink" title="2、启动okhttp"></a>2、启动okhttp</h3><p>在application.yml中启动okhttp</p>
-<pre><code class="java">feign:
-  okhttp:
-    enabled: true
-</code></pre>
-<h2 id="三、优雅地使用OpenFeign"><a href="#三、优雅地使用OpenFeign" class="headerlink" title="三、优雅地使用OpenFeign"></a>三、优雅地使用OpenFeign</h2><p>每个微服务在使用OpenFeign时都需要编写Feign客户端，代码重复编写，麻烦！</p>
-<p>采用一种新的架构，在各个微服务平级上新建一个api模块，里面定义三个包：</p>
-<ol>
-<li>client：里面存放整个项目中每一个微服务想要暴露的客户端。</li>
-<li>dto：存放所有微服务的需要公共访问的dto。</li>
-<li>config：存放OpenFeign的一些配置，比如日志配置等。</li>
-</ol>
-<p>每一个微服务需要使用Feign客户端时，引用api模块的依赖即可。</p>
-<p><img src="D:\software\Typora\Typora_files\images\OpenFeign新架构.png"></p>
-<h2 id="四、OpenFeign日志输出"><a href="#四、OpenFeign日志输出" class="headerlink" title="四、OpenFeign日志输出"></a>四、OpenFeign日志输出</h2><p>OpenFeign只会在FeignClient所在包的日志级别为DEBUG时，才会输出日志。其日志级别有4级:</p>
-<ol>
-<li>NONE：不记录任何日志信息，默认值。</li>
-<li>BASIC：仅记录请求的方法，URL以及响应状态码和执行时间。</li>
-<li>HEADERS：在BASIC基础上，记录了请求和响应头信息。</li>
-<li>FULL：记录所有请求和响应信息。</li>
-</ol>
-<p>自定义OpenFeign的日志级别，需要声明一个类型为Logger.Level的Bean，在其中定义日志级别：</p>
-<pre><code class="java">public class DefaultFeignConfig&#123;
-    @Bean
-    public Logger.Level feignLogLevel()&#123;
-        return Logger.Level.FULL;
-    &#125;
-&#125;
-</code></pre>
-<p>如果想要配置某一个FeignClient的日志，可以在该客户端中@FeignClient注解中声明：</p>
-<pre><code class="java">@FeignClient(value = &quot;item-service&quot;, configuration = DefaultFeignConfig.class)
-</code></pre>
-<p>如果想要全局配置，让所有的FeignClient客户端都按照这个日志配置，则需要在微服务的启动类中@EnableFeignClients注解中声明：</p>
-<pre><code class="java">@EnableFeignClients(defaultConfiguration = DefaultFeignConfig.class)
-</code></pre>
+            <p>OpenFeign远程调用微服务，如何配置连接池，一种新的OpenFeign架构，以及如何配置OpenFeign的日志输出。</p>
 
             
         </div>
@@ -280,7 +213,7 @@ public interface ItemClient&#123;
         
         <span class="tag">
             
-            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="color: #ffa2c4">微服务</a>
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="color: #03a9f4">微服务</a>
         </span>
         
     </div>
@@ -320,7 +253,7 @@ public interface ItemClient&#123;
         
         <span class="tag">
             
-            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="color: #ffa2c4">微服务</a>
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" style="color: #00bcd4">微服务</a>
         </span>
         
     </div>
@@ -360,7 +293,7 @@ public interface ItemClient&#123;
         
         <span class="tag">
             
-            <a href="/tags/guide/" style="color: #00a596">guide</a>
+            <a href="/tags/guide/" style="color: #ffa2c4">guide</a>
         </span>
         
     </div>
@@ -402,7 +335,7 @@ public interface ItemClient&#123;
         
         <span class="tag">
             
-            <a href="/tags/demo/" style="color: #ffa2c4">demo</a>
+            <a href="/tags/demo/" style="color: #00a596">demo</a>
         </span>
         
     </div>
